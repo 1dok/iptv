@@ -4,17 +4,20 @@ import os
 import subprocess
 from collections import defaultdict
 
-sources_file = "sources.txt"
-demo_file = "demo.txt"
-output_dir = "output"
+# ✅ 配置过滤条件控制开关
+enable_filter = False  # True 启用分辨率+速度过滤，False 则只判断链接能否访问
+
 min_speed_bytes = 1 * 1024 * 1024  # 1MB/s
 min_width = 1280
 min_height = 720
 max_links_per_channel = 10
 
+sources_file = "sources.txt"
+demo_file = "demo.txt"
+output_dir = "output"
 os.makedirs(output_dir, exist_ok=True)
 
-# 加载频道关键词，并标准化为简化匹配
+# 标准化频道名
 def clean(s):
     return re.sub(r'[^a-zA-Z0-9]', '', s.lower())
 
@@ -22,21 +25,31 @@ with open(demo_file, 'r', encoding='utf-8') as f:
     raw_keywords = [line.strip() for line in f if line.strip() and not line.startswith("#") and "genre" not in line]
     keywords = [clean(k) for k in raw_keywords]
 
-# IPv4 判断
 def is_ipv4(url):
     return '://' in url and not any(ipv6 in url for ipv6 in ['[', '::'])
 
-# 检测分辨率和下载速度
+# 测试流可访问性 / 画质 / 速度
 def test_stream(url):
     try:
+        if not enable_filter:
+            # ✅ 快速模式：只判断是否能连通
+            with requests.get(url, stream=True, timeout=5) as r:
+                chunk = next(r.iter_content(1024))
+                if len(chunk) > 0:
+                    return True
+                return "链接无响应"
+
+        # ✅ 精准模式：判断分辨率 + 速度
         ffprobe_cmd = [
             "ffprobe", "-v", "error", "-select_streams", "v:0",
             "-show_entries", "stream=width,height", "-of", "csv=p=0", url
         ]
         result = subprocess.run(ffprobe_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
         output = result.stdout.decode().strip()
+
         if not output:
             return "无法获取分辨率"
+
         width, height = map(int, output.split(','))
         if width < min_width or height < min_height:
             return f"分辨率过低：{width}x{height}"
@@ -45,15 +58,17 @@ def test_stream(url):
             chunk = next(r.iter_content(1024 * 512))
             if len(chunk) < 1024 * 512:
                 return "速度过慢"
-            return True
+
+        return True
+
     except Exception as e:
         return f"异常：{e}"
 
 candidates = defaultdict(list)
+match_count = defaultdict(int)
 filtered = []
 skipped = []
 
-# 抓取源并解析频道
 with open(sources_file, 'r', encoding='utf-8') as f:
     src_urls = [line.strip() for line in f if line.strip() and not line.startswith("#")]
 
@@ -75,19 +90,21 @@ for src in src_urls:
                 for idx, kw in enumerate(keywords):
                     if kw in cleaned_info:
                         print(f"🎯 命中关键词: {raw_keywords[idx]} → {info_line.strip()}")
+                        match_count[kw] += 1
                         if len(candidates[kw]) < max_links_per_channel:
                             candidates[kw].append((info_line, url))
                         break
     except Exception as e:
         print(f"⚠️ 抓取失败: {e}")
 
-# 测试每个候选
+# 测试候选流
 for kw, streams in candidates.items():
-    print(f"\n🔍 测试频道关键词: {kw}（候选 {len(streams)} 个）")
+    print(f"\n🔍 测试频道关键词: {kw}（候选 {len(streams)} 条）")
     count = 0
     for info, url in streams:
-        print(f"  → 测试: {url}")
+        print(f"  → 测试链接: {url}")
         result = test_stream(url)
+        print(f"    测试结果: {result}")
         if result is True:
             filtered.append(f"{info}\n{url}")
             count += 1
@@ -96,13 +113,28 @@ for kw, streams in candidates.items():
         if count >= max_links_per_channel:
             break
 
-# 输出结果
-with open(os.path.join(output_dir, "filtered.m3u"), "w", encoding="utf-8") as f:
+# 写入结果
+filtered_file = os.path.join(output_dir, "filtered.m3u")
+skipped_file = os.path.join(output_dir, "skipped.txt")
+
+with open(filtered_file, "w", encoding="utf-8") as f:
     f.write("#EXTM3U\n")
-    f.write("\n".join(filtered))
+    if filtered:
+        f.write("\n".join(filtered))
+    else:
+        f.write("# 无符合条件的直播源\n")
 
-with open(os.path.join(output_dir, "skipped.txt"), "w", encoding="utf-8") as f:
-    f.write("\n".join(skipped))
+with open(skipped_file, "w", encoding="utf-8") as f:
+    if skipped:
+        f.write("\n".join(skipped))
+    else:
+        f.write("# 所有频道检测均未命中或测速失败\n")
 
-print(f"\n✅ 合格源数量: {len(filtered)}")
-print(f"🚫 被过滤源数量: {len(skipped)}（见 output/skipped.txt）")
+# 输出匹配情况统计
+print("\n📊 匹配频道统计：")
+for raw, kw in zip(raw_keywords, keywords):
+    print(f"  - {raw} 匹配流数: {match_count[kw]}")
+
+print(f"\n✅ 合格源写入: {len(filtered)} 条")
+print(f"🚫 不合格写入: {len(skipped)} 条")
+print("📁 已写入 output/filtered.m3u 和 output/skipped.txt")
