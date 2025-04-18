@@ -1,20 +1,11 @@
-# CCTV-1 超清（公开 HLS）
-https://hls01open.ysxcdn.com/live/cctv1hd/playlist.m3u8
+# IPTV-Unicom.m3u
+https://github.com/qwerttvv/Beijing-IPTV/blob/master/IPTV-Unicom.m3u
 
-# 湖南卫视 HD（百视通 CDN）
-https://livedata.itv.cmvideo.cn:8088/live/HUNANTV_2M/HUNANTV.m3u8
+# IPTV-Unicom-Multicast.m3u
+https://github.com/qwerttvv/Beijing-IPTV/blob/master/IPTV-Unicom-Multicast.m3u
 
-# 东方卫视 HD（百视通 CDN）
-https://livedata.itv.cmvideo.cn:8088/live/DONGFANGTV_2M/DONGFANGTV.m3u8
+# IPTV-Mobile.m3u
+https://github.com/qwerttvv/Beijing-IPTV/blob/master/IPTV-Mobile.m3u
 
-# 北京卫视（公网源）
-http://221.179.217.70:9901/tsfile/live/1001_1.m3u8
-
-# 深圳卫视（公网源）
-http://221.179.217.70:9901/tsfile/live/1001_2.m3u8
-
-# 广东卫视（公网源）
-http://221.179.217.70:9901/tsfile/live/1001_3.m3u8
-
-# CCTV-13（新闻频道）
-https://hls01open.ysxcdn.com/live/cctv13hd/playlist.m3u8
+# IPTV-Mobile-Multicast.m3u
+https://github.com/qwerttvv/Beijing-IPTV/blob/master/IPTV-Mobile-Multicast.m3u
