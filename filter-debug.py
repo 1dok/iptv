@@ -14,6 +14,7 @@ max_links_per_channel = 10
 
 os.makedirs(output_dir, exist_ok=True)
 
+# 关键词清理函数
 def clean(s):
     return re.sub(r'[^a-zA-Z0-9]', '', s.lower())
 
@@ -21,9 +22,20 @@ with open(demo_file, 'r', encoding='utf-8') as f:
     raw_keywords = [line.strip() for line in f if line.strip() and not line.startswith("#") and "genre" not in line]
     keywords = [clean(k) for k in raw_keywords]
 
+# 判断是否为 IPv4 链接
 def is_ipv4(url):
     return '://' in url and not any(ipv6 in url for ipv6 in ['[', '::'])
 
+# 链接中解析分辨率的备选方案
+def infer_resolution_from_url(url):
+    url = url.lower()
+    if "1080" in url or "fullhd" in url:
+        return (1920, 1080)
+    elif "720" in url or "hd" in url:
+        return (1280, 720)
+    return (0, 0)
+
+# 检测分辨率 + 速度（支持 fallback）
 def test_stream(url):
     try:
         ffprobe_cmd = [
@@ -32,9 +44,14 @@ def test_stream(url):
         ]
         result = subprocess.run(ffprobe_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
         output = result.stdout.decode().strip()
-        if not output:
-            return "无法获取分辨率"
-        width, height = map(int, output.split(','))
+
+        if output:
+            width, height = map(int, output.split(','))
+        else:
+            width, height = infer_resolution_from_url(url)
+            if width == 0:
+                return "无法获取分辨率"
+
         if width < min_width or height < min_height:
             return f"分辨率过低：{width}x{height}"
 
@@ -46,6 +63,7 @@ def test_stream(url):
     except Exception as e:
         return f"异常：{e}"
 
+# 频道匹配与测速
 candidates = defaultdict(list)
 match_count = defaultdict(int)
 filtered = []
@@ -77,9 +95,9 @@ for src in src_urls:
                             candidates[kw].append((info_line, url))
                         break
     except Exception as e:
-        print(f"⚠️ 源抓取失败: {e}")
+        print(f"⚠️ 抓取失败: {e}")
 
-# 测试流
+# 检测每个候选流
 for kw, streams in candidates.items():
     print(f"\n🔍 测试频道关键词: {kw}（候选 {len(streams)} 条）")
     count = 0
@@ -96,7 +114,7 @@ for kw, streams in candidates.items():
         if count >= max_links_per_channel:
             break
 
-# 写入文件
+# 输出文件
 filtered_file = os.path.join(output_dir, "filtered.m3u")
 skipped_file = os.path.join(output_dir, "skipped.txt")
 
@@ -113,7 +131,7 @@ with open(skipped_file, "w", encoding="utf-8") as f:
     else:
         f.write("# 所有频道检测均未命中或测速失败\n")
 
-# 总结输出
+# 控制台总结
 print("\n📊 匹配频道统计：")
 for raw, kw in zip(raw_keywords, keywords):
     print(f"  - {raw} 匹配流数: {match_count[kw]}")
