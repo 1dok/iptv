@@ -31,6 +31,7 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
+          git reset --hard HEAD
           git pull origin main --rebase
           git add output/
           git commit -m "daily filtered.m3u update" || echo "No changes to commit"
