@@ -25,7 +25,7 @@ jobs:
         run: pip install requests
 
       - name: Run filtering script
-        run: python filter.py
+        run: python filter-debug.py
 
       - name: Commit filtered output
         run: |
