@@ -5,7 +5,7 @@ import subprocess
 from collections import defaultdict
 
 # ✅ 配置过滤条件控制开关
-enable_filter = False  # True 启用分辨率+速度过滤，False 则只判断链接能否访问
+enable_filter = True  # True 启用分辨率+速度过滤，False 则只判断链接能否访问
 
 min_speed_bytes = 1 * 1024 * 1024  # 1MB/s
 min_width = 1280
