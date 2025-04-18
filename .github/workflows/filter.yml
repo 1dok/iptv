@@ -1,0 +1,35 @@
+name: Auto Filter IPTV
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # 每天UTC 3点（北京时间11点）运行
+  workflow_dispatch:
+
+jobs:
+  filter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install ffmpeg
+        run: sudo apt update && sudo apt install -y ffmpeg
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run IPTV Filter
+        run: python filter.py
+
+      - name: Commit filtered m3u
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add output/
+          git commit -m "daily update filtered m3u" || echo "No changes"
+          git push
