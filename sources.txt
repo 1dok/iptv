@@ -1,14 +1,11 @@
-# IPTV-Unicom.m3u
-https://github.com/qwerttvv/Beijing-IPTV/blob/master/IPTV-Unicom.m3u
+# CCTV-1 超清
+https://hls01open.ysxcdn.com/live/cctv1hd/playlist.m3u8
 
-# IPTV-Unicom-Multicast.m3u
-https://github.com/qwerttvv/Beijing-IPTV/blob/master/IPTV-Unicom-Multicast.m3u
+# 湖南卫视 HD（百视通）
+https://livedata.itv.cmvideo.cn:8088/live/HUNANTV_2M/HUNANTV.m3u8
 
-# IPTV-Mobile.m3u
-https://github.com/qwerttvv/Beijing-IPTV/blob/master/IPTV-Mobile.m3u
+# 东方卫视 HD
+https://livedata.itv.cmvideo.cn:8088/live/DONGFANGTV_2M/DONGFANGTV.m3u8
 
-# IPTV-Mobile-Multicast.m3u
-https://github.com/qwerttvv/Beijing-IPTV/blob/master/IPTV-Mobile-Multicast.m3u
-
-# 📺 CCTV高清频道（无广告，第三方转码）
-https://iptv-org.github.io/iptv/categories/news.m3u
+# 北京卫视（中国移动公网）
+http://221.179.217.70:9901/tsfile/live/1001_1.m3u8
