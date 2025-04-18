@@ -7,7 +7,7 @@ from collections import defaultdict
 sources_file = "sources.txt"
 demo_file = "demo.txt"
 output_dir = "output"
-min_speed_bytes = 2 * 1024 * 1024  # 2MB/s
+min_speed_bytes = 1 * 1024 * 1024  # 2MB/s
 min_width = 1920
 min_height = 1080
 max_links_per_channel = 10
