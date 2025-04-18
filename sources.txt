@@ -1,21 +1,14 @@
-# 🌐 北京移动 IPTV 转码源（GitHub中继，超稳定）
-https://raw.githubusercontent.com/qwerttvv/Beijing-IPTV/master/m3u/hd.m3u
+# IPTV-Unicom.m3u
+https://github.com/qwerttvv/Beijing-IPTV/blob/master/IPTV-Unicom.m3u
 
-# 🛰️ 山东移动 IPTV（可用性良好，清晰度高）
-https://raw.githubusercontent.com/qwerttvv/Shandong-IPTV/master/m3u/hd.m3u
+# IPTV-Unicom-Multicast.m3u
+https://github.com/qwerttvv/Beijing-IPTV/blob/master/IPTV-Unicom-Multicast.m3u
+
+# IPTV-Mobile.m3u
+https://github.com/qwerttvv/Beijing-IPTV/blob/master/IPTV-Mobile.m3u
+
+# IPTV-Mobile-Multicast.m3u
+https://github.com/qwerttvv/Beijing-IPTV/blob/master/IPTV-Mobile-Multicast.m3u
 
 # 📺 CCTV高清频道（无广告，第三方转码）
 https://iptv-org.github.io/iptv/categories/news.m3u
-
-# 📡 港澳台 & 音乐频道（iptv-org 分类）
-https://iptv-org.github.io/iptv/categories/music.m3u
-https://iptv-org.github.io/iptv/categories/entertainment.m3u
-
-# 🧪 教育/公开测试频道（少量但高质）
-https://iptv-org.github.io/iptv/categories/educational.m3u
-
-# 🇨🇳 Free-IPTV 中国频道合集（部分高清）
-https://raw.githubusercontent.com/Free-IPTV/Countries/master/CN.m3u
-
-# ✅ tv345.net 内部直链收集（已测试部分源稳定）
-https://raw.githubusercontent.com/lizhongping/tv345-iptv/main/iptv.m3u
